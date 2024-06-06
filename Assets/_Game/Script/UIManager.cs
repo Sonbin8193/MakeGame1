@@ -6,6 +6,7 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
+    public GameObject WaterCollider;
     //Khoi tao UI Manager cachs 1
     //public static UIManager Instance
     //{
@@ -27,5 +28,17 @@ public class UIManager : MonoBehaviour
     public void SetCoin(int coin)
     {
         coinText.text = coin.ToString();
+    }
+
+    public void WaterPoition()
+    {
+        StartCoroutine(ActiveWaterPoition());
+    }
+
+    IEnumerator ActiveWaterPoition()
+    {
+        WaterCollider.SetActive(true);
+        yield return new WaitForSeconds(10f);
+        WaterCollider.SetActive(false);
     }
 }

@@ -8,6 +8,8 @@ TagManager:
   - DeadZone
   - EnemyWall
   - Enemy
+  - HPbottle
+  - FlashBottle
   layers:
   - Default
   - TransparentFX

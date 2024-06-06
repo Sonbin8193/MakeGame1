@@ -2,13 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Enemy : Character
 {
     [SerializeField] private float attackRange;
     [SerializeField] private float moveSpeed;
     [SerializeField] private Rigidbody2D rb;
-
+    [SerializeField] private GameObject hpBottle;
+    [SerializeField] private GameObject flashBottle;
     [SerializeField] private GameObject attackArea;
 
     private IState currentState;
@@ -36,8 +38,14 @@ public class Enemy : Character
     {
         ChangeState(null);
         base.OnDeath();
+        int random = Random.Range(0,100);
+        if (random <90)
+        {
+            Instantiate(hpBottle, gameObject.transform.position, transform.rotation);
+            Instantiate(flashBottle, gameObject.transform.position, transform.rotation);
+        }
     }
-    public override void OnDespawn()
+    public override void OnDespawn()    
     {
         base.OnDespawn();
         Destroy(gameObject);

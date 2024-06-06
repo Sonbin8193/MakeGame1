@@ -8,7 +8,7 @@ public class Character : MonoBehaviour
 
     [SerializeField] protected CombatText CombatTextPrefab ;
 
-    private float hp;
+    public float hp;
     private string currentAnimName;
     public bool IsDead => hp <= 0;
 
@@ -28,6 +28,7 @@ public class Character : MonoBehaviour
     }
     protected void ChangeAnim(string animName)
     {
+        //Debug.Log(animName + "  " + currentAnimName);
         if (currentAnimName != animName)
         {
             anim.ResetTrigger(animName);

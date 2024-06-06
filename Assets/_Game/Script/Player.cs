@@ -11,12 +11,14 @@ public class Player : Character
     [SerializeField] private float speed = 5f;
     [SerializeField] private float jumpForce = 350;
     [SerializeField] private Kunai kunaiPrefab;
+    [SerializeField] private int kunaiCapacity = 3;
     [SerializeField] private Transform throwPoint;
     [SerializeField] private GameObject attackArea;
+    [SerializeField] private float attackDamage;
 
-    private bool isGrounded = true;
-    private bool isJumping = false;
-    private bool isAttack = false;
+    public bool isGrounded = true;
+    public bool isJumping = false;
+    public bool isAttack = false;
 
     private float horizontal;
 
@@ -33,9 +35,9 @@ public class Player : Character
             return;
         }
         isGrounded = CheckGrounded();
-        SetMove(horizontal);
+        //SetMove(horizontal);
         // horizontal có giá trị từ -1 đến 1, -1 khi ấn sang trái và 1 khi ấn sang phải
-       //horizontal = Input.GetAxisRaw("Horizontal");
+        horizontal = Input.GetAxisRaw("Horizontal");
 
         if (isAttack)
         {
@@ -44,30 +46,26 @@ public class Player : Character
         }
         if (isGrounded)
         {
-            if (isJumping)
-            {
-                return;
-            }
             //jump
-            if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+            if (Input.GetKeyDown(KeyCode.Space))
             {
                 Jump();
             }
             //change anim run
-            if (Mathf.Abs(horizontal) >= 0.1f)
+            if (Mathf.Abs(horizontal) > 0.1f)
             {
                 ChangeAnim("run");
             }
-            //attack
-            if (Input.GetKeyDown(KeyCode.C) && isGrounded)
-            {
-                Attack();
-            }
-            //throw
-            if (Input.GetKeyDown(KeyCode.Q) && isGrounded)
-            {
-                Throw();
-            }
+        }
+        //attack
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            Attack();
+        }
+        //throw
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            Throw();
         }
         //check falling
         if (!isGrounded && rb.velocity.y < 0)
@@ -82,7 +80,7 @@ public class Player : Character
             transform.rotation = Quaternion.Euler(new Vector3(0,horizontal>0?0:180,0));
         }
         //idle
-        else if (isGrounded)
+        else if (isGrounded && !isAttack)
         {
             ChangeAnim("idle");
             rb.velocity = Vector2.zero;
@@ -133,21 +131,34 @@ public class Player : Character
     }
     public void Throw()
     {
-        ChangeAnim("throw");
-        isAttack = true;
-        Invoke(nameof(ResetAttack), 0.5f);
+        if (kunaiCapacity > 0)
+        {
+            ChangeAnim("throw");
+            isAttack = true;
+            Invoke(nameof(ResetAttack), 0.5f);         
+            Instantiate(kunaiPrefab, throwPoint.position, throwPoint.rotation);
+            kunaiCapacity--;
+            if (kunaiCapacity == 0)
+            {
+                ChangeAnim("Idle");
+                Invoke(nameof(CreatKunai), 10f);
+            }
+        } 
+    }
 
-        Instantiate(kunaiPrefab,throwPoint.position,throwPoint.rotation);
+    private void CreatKunai()
+    {
+        kunaiCapacity = 3;
     }
     private void ResetAttack()
     {
-        //ChangeAnim("ilde");
+        ChangeAnim("idle");
         isAttack = false;
     }
     public void Jump()
     {
-       isJumping = true;
         ChangeAnim("jumpin");
+        isJumping = true;
         rb.AddForce(jumpForce*Vector2.up);
     }
     internal void SavePoint()
@@ -167,6 +178,7 @@ public class Player : Character
         if (collision.tag == "Coin")
         {
             coin++;
+
             PlayerPrefs.SetInt("coin", coin);
             UIManager.instance.SetCoin(coin);
             Destroy(collision.gameObject);
@@ -177,12 +189,29 @@ public class Player : Character
 
             Invoke(nameof(OnInit), 1f);
         }
+        if (collision.tag == "FlashBottle")
+        {
+            Destroy(collision.gameObject);
+            UIManager.instance.WaterPoition();
+        }
+        if (collision.tag == "HPbottle")
+        {
+            Destroy(collision.gameObject);
+            HealingPlayer();         
+        }
     }
-
+    private void HealingPlayer()
+    {
+        this.hp += 30;
+        if (hp>100)
+        {
+            hp = 100;
+        }
+        healthBar.SetNewHp(hp);
+    }
     public void SetMove(float horizontal)
     {
         
         this.horizontal = horizontal;
-        Debug.Log("horizontal");
     }
 }
