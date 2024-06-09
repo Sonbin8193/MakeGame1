@@ -23,7 +23,7 @@ public class Kunai : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "Enemy")
+        if (collision.tag == "Enemy" || collision.tag == "Player")
         {
             collision.GetComponent<Character>().OnHit(30f);
             Instantiate(hitVFX, transform.position, transform.rotation);

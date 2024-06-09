@@ -6,7 +6,7 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
-    public GameObject WaterCollider;
+    public GameObject waterCollider;
     //Khoi tao UI Manager cachs 1
     //public static UIManager Instance
     //{
@@ -22,7 +22,8 @@ public class UIManager : MonoBehaviour
     //Khoi tao UI Manager cachs 2
     private void Awake()
     {
-          instance=this;
+        instance=this;
+        waterCollider.SetActive(false);
     }
     [SerializeField]TMP_Text coinText;
     public void SetCoin(int coin)
@@ -37,8 +38,8 @@ public class UIManager : MonoBehaviour
 
     IEnumerator ActiveWaterPoition()
     {
-        WaterCollider.SetActive(true);
+        waterCollider.SetActive(true);
         yield return new WaitForSeconds(10f);
-        WaterCollider.SetActive(false);
+        waterCollider.SetActive(false);
     }
 }
